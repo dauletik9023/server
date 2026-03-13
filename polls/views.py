@@ -1,10 +1,11 @@
 from django.db.models import F
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from .models import Choice, Question
+from django.views.decorators.csrf import csrf_exempt
 
 class IndexView(generic.ListView):
     template_name = "polls/index.html"
@@ -21,7 +22,8 @@ class IndexView(generic.ListView):
 
 
 class DetailView(generic.DetailView):
-    ...
+    model = Question
+    template_name = "polls/detail.html"
 
     def get_queryset(self):
         """
@@ -55,4 +57,9 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
-
+@csrf_exempt
+def testnse():
+    if request.method == "POST":
+        return HttpResponse("post")
+    else:
+        return HttpResponse("Not a POST")      
