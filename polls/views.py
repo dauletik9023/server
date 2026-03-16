@@ -6,6 +6,11 @@ from django.views import generic
 from django.utils import timezone
 from .models import Choice, Question
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import Account
+import json
+
+
 
 class IndexView(generic.ListView):
     template_name = "polls/index.html"
@@ -57,9 +62,31 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+
 @csrf_exempt
-def testnse():
+def testnse(request):
     if request.method == "POST":
-        return HttpResponse("post")
+        return HttpResponse(request.body)
     else:
-        return HttpResponse("Not a POST")      
+        return HttpResponse("Not a POST")
+
+def decode(pswd,n):
+    results = ""
+    for i in pswd:
+        results+=chr(ord(i)-n)
+    return results
+
+@csrf_exempt
+def acc_log(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        login = data["login"]
+        pswd = data["password"]
+        password = decode(pswd,3)
+        q = Account(login=login,password=password)
+        q.save()
+        if q:
+            return JsonResponse({"status":"nice"})
+        else:
+            return JsonResponse({"status":"not nice"})
+    return JsonResponse({"messege":"post"})
