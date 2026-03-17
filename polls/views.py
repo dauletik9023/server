@@ -90,3 +90,21 @@ def acc_log(request):
         else:
             return JsonResponse({"status":"not nice"})
     return JsonResponse({"messege":"post"})
+
+
+@csrf_exempt
+def acc_all(request):
+    if request.method == "GET":
+        accounts = Account.objects.valueas("login","password","id")
+        return JsonResponse(list(accounts),safe=False)
+
+@csrf_exempt
+def acc_poid(request):
+    accc = get_object_or_404(Account,id=id)
+    if request.method == "GET":
+        return JsonResponse({
+            "id":accc.id,
+            "login":accc.id,
+            "password":accc.id
+        })
+        
